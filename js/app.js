@@ -16,9 +16,16 @@ Enemy.prototype.update = function(dt) {
     // all computers.
 };
 
+Enemy.prototype.getX = function() {
+    return 0;
+};
+Enemy.prototype.getY = function() {
+    return 83;
+};
+
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.getX(), this.getY());
 };
 
 // Now write your own player class
@@ -28,8 +35,9 @@ Enemy.prototype.render = function() {
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
+var allEnemies = [new Enemy()];
 // Place the player object in a variable called player
-
+player = new Enemy(); //TODO alterar essa linha quando criar a classe Player
 
 
 // This listens for key presses and sends the keys to your
