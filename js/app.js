@@ -2,6 +2,8 @@
 var Entity = function(x, y, sprite) {
    this.x = x;
    this.y = y;
+   this.w = 101;
+   this.h = 80;
    this.velocity = 200 * Math.random() + 50;
    this.sprite = sprite;
 };

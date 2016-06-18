@@ -80,7 +80,29 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
+    }
+
+    function checkCollisions() {
+        for (var i=0; i<allEnemies.length; i++) {
+            var enemy1 = allEnemies[i];
+            checkCollision(player, enemy1);
+            for (var j=i+1; j<allEnemies.length; j++) {
+                var enemy2 = allEnemies[j];
+                checkCollision(enemy1, enemy2);
+            };
+        };
+    }
+
+    function checkCollision(entity1, entity2) {
+	var collision = ((entity1.y < entity2.y) && (entity2.y < entity1.y+entity1.h));
+	var y = ((entity2.y < entity1.y) && (entity1.y < entity2.y+entity2.h));
+	y = y || collision;
+	collision = ((entity1.x < entity2.x) && (entity2.x < entity1.x+entity1.w));
+	var x = ((entity2.x < entity1.x) && (entity1.x < entity2.x+entity2.w));
+	x = x || collision;
+	collision = x && y;
+	if (collision) console.log(entity1 + " e " + entity2 + " colidiram!");
     }
 
     /* This is called by the update function and loops through all of the
