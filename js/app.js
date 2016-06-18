@@ -30,25 +30,37 @@ Enemy.prototype.update = function(dt) {
 // a handleInput() method.
 var Player = function() {
    Entity.call(this, 202, 400, 'images/char-boy.png');
-   this.dir = '';
-   this.dx = 80 * Math.random() + 20;
-   this.dy = 80 * Math.random() + 20;
+   this.dx = 101;
+   this.dy = 80;
+   this.ix = 0;
+   this.iy = 0;   
 };
 Player.prototype = Object.create(Entity.prototype);
 Player.prototype.constructor = Player;
 Player.prototype.update = function() {
-   if (this.dir === 'left')
-      this.x -= this.dx;
-   else if (this.dir === 'right')
-      this.x += this.dx;
-   else if (this.dir === 'up')
-      this.y -= this.dy;
-   else if (this.dir === 'down')
-      this.y += this.dy;
-   this.dir = '';
+   var newValue;
+   if (this.ix != 0) {
+      newValue = this.x + this.ix * this.dx;
+      if ((0 <= newValue) && (newValue < 505))
+         this.x = newValue;
+      this.ix = 0;
+   }
+   if (this.iy != 0) {
+      newValue = this.y + this.iy * this.dy;
+      if ((0 <= newValue) && (newValue < 450))
+         this.y = newValue;
+      this.iy = 0;   
+   }
 };
 Player.prototype.handleInput = function(dir) {
-   this.dir = dir;
+   if (dir === 'left')
+      this.ix--;
+   else if (dir === 'right')
+      this.ix++;
+   else if (dir === 'up')
+      this.iy--;
+   else if (dir === 'down')
+      this.iy++;
 };
 
 
@@ -56,7 +68,7 @@ Player.prototype.handleInput = function(dir) {
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [new Enemy(1), new Enemy(2), new Enemy(3)];
 // Place the player object in a variable called player
-var player = new Player(); //TODO alterar essa linha quando criar a classe Player
+var player = new Player();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
