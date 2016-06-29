@@ -4,17 +4,17 @@ var Entity = function(x, y, sprite) {
    this.y = y;
    this.w = 101;
    this.h = 80;
-   this.velocity = 200 * Math.random() + 50;
    this.sprite = sprite;
 };
 // Draw the enemy on the screen, required method for game
 Entity.prototype.render = function() {
-   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+   ctx.drawImage(Resources.get(this.sprite), this.x*101, this.y*80-11);
 };
 
 // Enemies our player must avoid
 var Enemy = function(row) {
-   Entity.call(this, 0, row*80-11, 'images/enemy-bug.png');
+   Entity.call(this, -1, row, 'images/enemy-bug.png');
+   this.velocity = 2 * Math.random() + 0.5;
 };
 Enemy.prototype = Object.create(Entity.prototype);
 Enemy.prototype.constructor = Enemy;
@@ -22,8 +22,8 @@ Enemy.prototype.constructor = Enemy;
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
    this.x = this.x + this.velocity*dt;
-   if (this.x > 510)
-      this.x = -100;
+   if (this.x > 6.5)
+      this.x = -1.5;
 };
 
 
@@ -31,9 +31,8 @@ Enemy.prototype.update = function(dt) {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function() {
-   Entity.call(this, 202, 400, 'images/char-boy.png');
+   Entity.call(this, 2, 5, 'images/char-boy.png');
    this.dx = 101;
-   this.dy = 80;
    this.ix = 0;
    this.iy = 0;   
 };
@@ -42,14 +41,22 @@ Player.prototype.constructor = Player;
 Player.prototype.update = function() {
    var newValue;
    if (this.ix != 0) {
-      newValue = this.x + this.ix * this.dx;
-      if ((0 <= newValue) && (newValue < 505))
+      newValue = this.x + this.ix;
+      if (newValue < 0)
+         this.x = 0;
+      else if (newValue >= 5)
+         this.x = 4;
+      else
          this.x = newValue;
       this.ix = 0;
    }
    if (this.iy != 0) {
-      newValue = this.y + this.iy * this.dy;
-      if ((0 <= newValue) && (newValue < 450))
+      newValue = this.y + this.iy;
+      if (newValue < 0)
+         this.y = 0;
+      else if (newValue >= 6)
+         this.y = 5;
+      else
          this.y = newValue;
       this.iy = 0;   
    }

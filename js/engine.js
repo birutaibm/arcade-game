@@ -95,11 +95,9 @@ var Engine = (function(global) {
     }
 
     function checkCollision(entity1, entity2) {
-	var collision = ((entity1.y < entity2.y) && (entity2.y < entity1.y+entity1.h));
-	var y = ((entity2.y < entity1.y) && (entity1.y < entity2.y+entity2.h));
-	y = y || collision;
-	collision = ((entity1.x < entity2.x) && (entity2.x < entity1.x+entity1.w));
-	var x = ((entity2.x < entity1.x) && (entity1.x < entity2.x+entity2.w));
+	var y = entity1.y === entity2.y;
+	var collision = ((entity1.x < entity2.x) && (entity2.x < entity1.x+1));
+	var x = ((entity2.x < entity1.x) && (entity1.x < entity2.x+1));
 	x = x || collision;
 	collision = x && y;
 	if (collision) console.log(entity1 + " e " + entity2 + " colidiram!");
