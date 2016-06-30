@@ -24,6 +24,7 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
+    var running = false;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -33,30 +34,32 @@ var Engine = (function(global) {
      * and handles properly calling the update and render methods.
      */
     function main() {
-        /* Get our time delta information which is required if your game
-         * requires smooth animation. Because everyone's computer processes
-         * instructions at different speeds we need a constant value that
-         * would be the same for everyone (regardless of how fast their
-         * computer is) - hurray time!
-         */
-        var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
+	if (running) {
+            /* Get our time delta information which is required if your game
+             * requires smooth animation. Because everyone's computer processes
+             * instructions at different speeds we need a constant value that
+             * would be the same for everyone (regardless of how fast their
+             * computer is) - hurray time!
+             */
+            var now = Date.now(),
+                dt = (now - lastTime) / 1000.0;
 
-        /* Call our update/render functions, pass along the time delta to
-         * our update function since it may be used for smooth animation.
-         */
-        update(dt);
-        render();
+            /* Call our update/render functions, pass along the time delta to
+             * our update function since it may be used for smooth animation.
+             */
+            update(dt);
+            render();
 
-        /* Set our lastTime variable which is used to determine the time delta
-         * for the next time this function is called.
-         */
-        lastTime = now;
+            /* Set our lastTime variable which is used to determine the time delta
+             * for the next time this function is called.
+             */
+            lastTime = now;
 
-        /* Use the browser's requestAnimationFrame function to call this
-         * function again as soon as the browser is able to draw another frame.
-         */
-        win.requestAnimationFrame(main);
+            /* Use the browser's requestAnimationFrame function to call this
+             * function again as soon as the browser is able to draw another frame.
+             */
+            win.requestAnimationFrame(main);
+        }
     }
 
     /* This function does some initial setup that should only occur once,
@@ -66,6 +69,7 @@ var Engine = (function(global) {
     function init() {
         reset();
         lastTime = Date.now();
+	running = true;
         main();
     }
 
@@ -95,12 +99,24 @@ var Engine = (function(global) {
     }
 
     function checkCollision(entity1, entity2) {
-	var y = entity1.y === entity2.y;
-	var collision = ((entity1.x < entity2.x) && (entity2.x < entity1.x+1));
-	var x = ((entity2.x < entity1.x) && (entity1.x < entity2.x+1));
+	var collision = ((entity1.y <= entity2.y) && (entity2.y < entity1.y+1));
+	var y = ((entity2.y <= entity1.y) && (entity1.y < entity2.y+1));
+	y = y || collision;
+	collision = ((entity1.x <= entity2.x) && (entity2.x < entity1.x+1));
+	var x = ((entity2.x <= entity1.x) && (entity1.x < entity2.x+1));
 	x = x || collision;
 	collision = x && y;
-	if (collision) console.log(entity1 + " e " + entity2 + " colidiram!");
+	if (collision)
+	   processCollision(entity1, entity2);
+    }
+
+    function processCollision(entity1, entity2) {
+	if (entity1 instanceof Player)
+	    if (entity2 instanceof Enemy) {
+		running = false;
+		console.log("Game Over!");
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+	    }
     }
 
     /* This is called by the update function and loops through all of the
