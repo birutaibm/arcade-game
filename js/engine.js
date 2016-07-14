@@ -100,17 +100,6 @@ var Engine = (function(global) {
         };
     }
 
-   function checkCollision(entity1, entity2) {
-		var collision = ((entity1.y <= entity2.y) && (entity2.y < entity1.y+1));
-		var y = ((entity2.y <= entity1.y) && (entity1.y < entity2.y+1));
-		y = y || collision;
-		collision = ((entity1.x <= entity2.x) && (entity2.x < entity1.x+1));
-		var x = ((entity2.x <= entity1.x) && (entity1.x < entity2.x+1));
-		x = x || collision;
-		collision = x && y;
-		return collision;
-   }
-
    function processCollision(entity1, entity2) {
 		if (entity1 instanceof Player) {
 	   	if (entity2 instanceof Enemy) {

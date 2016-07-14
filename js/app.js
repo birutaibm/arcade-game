@@ -11,24 +11,59 @@ Entity.prototype.render = function() {
    ctx.drawImage(Resources.get(this.sprite), this.x*101, this.y*80-11);
 };
 
+function checkCollision(entity1, entity2) {
+	var collision = ((entity1.y <= entity2.y) && (entity2.y < entity1.y+1));
+	var y = ((entity2.y <= entity1.y) && (entity1.y < entity2.y+1));
+	y = y || collision;
+	collision = ((entity1.x <= entity2.x) && (entity2.x < entity1.x+1));
+	var x = ((entity2.x <= entity1.x) && (entity1.x < entity2.x+1));
+	x = x || collision;
+	collision = x && y;
+	return collision;
+}
+
 // Enemies our player must avoid
 var Enemy = function(row, col) {
 	if (col === undefined)
-   	Entity.call(this, -1, row, 'images/enemy-bug.png');
+   	Entity.call(this, -1.5, row, 'images/enemy-bug.png');
 	else
    	Entity.call(this, col, row, 'images/enemy-bug.png');
    this.velocity = 2 * Math.random() + 0.5;
+	this.blocked = false;
 };
 Enemy.prototype = Object.create(Entity.prototype);
 Enemy.prototype.constructor = Enemy;
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-   this.x = this.x + this.velocity*dt;
-   if (this.x > 6.5)
-      this.x = -1.5;
+	if (!this.blocked) {
+   	this.x = this.x + this.velocity*dt;
+	   if (this.x > 6.5) {
+    	   this.x = -1.5;
+			for (var i=0; i<allEnemies.length; i++)
+				if (this.isBlockedBy(i))
+					this.blocked = true;
+		}
+	} else {
+		var unblock = true
+		for (var i=0; i<allEnemies.length; i++)
+			if (this.isBlockedBy(i))
+				unblock = false;
+		if (unblock)
+			this.blocked = false;
+   }
 };
-
+Enemy.prototype.isBlockedBy = function(otherEnemyIndex) {
+	if (this === allEnemies[otherEnemyIndex])
+		return false; //não pode ser bloqueado por ele mesmo
+	if (this.x > -1)
+		return false; //não pode ser bloqueado dentro da tela
+	if (allEnemies[otherEnemyIndex].blocked)
+		return false; //aquele que está bloqueado não pode bloquear outro
+	if (checkCollision(this, allEnemies[otherEnemyIndex]))
+		return true;
+	return false;
+};
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -78,7 +113,7 @@ Player.prototype.handleInput = function(dir) {
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-var allEnemies = [new Enemy(1,0), new Enemy(1), new Enemy(2), new Enemy(3), new Enemy(2,0), new Enemy(3,0)];
+var allEnemies = [new Enemy(1), new Enemy(1), new Enemy(2), new Enemy(3), new Enemy(2), new Enemy(3)];
 // Place the player object in a variable called player
 var player = new Player();
 
