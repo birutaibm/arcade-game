@@ -12,8 +12,11 @@ Entity.prototype.render = function() {
 };
 
 // Enemies our player must avoid
-var Enemy = function(row) {
-   Entity.call(this, -1, row, 'images/enemy-bug.png');
+var Enemy = function(row, col) {
+	if (col === undefined)
+   	Entity.call(this, -1, row, 'images/enemy-bug.png');
+	else
+   	Entity.call(this, col, row, 'images/enemy-bug.png');
    this.velocity = 2 * Math.random() + 0.5;
 };
 Enemy.prototype = Object.create(Entity.prototype);
@@ -75,7 +78,7 @@ Player.prototype.handleInput = function(dir) {
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-var allEnemies = [new Enemy(1), new Enemy(2), new Enemy(3)];
+var allEnemies = [new Enemy(1,0), new Enemy(1), new Enemy(2), new Enemy(3), new Enemy(2,0), new Enemy(3,0)];
 // Place the player object in a variable called player
 var player = new Player();
 

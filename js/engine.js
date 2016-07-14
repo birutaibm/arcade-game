@@ -69,7 +69,7 @@ var Engine = (function(global) {
     function init() {
         reset();
         lastTime = Date.now();
-	running = true;
+	     running = true;
         main();
     }
 
@@ -90,34 +90,42 @@ var Engine = (function(global) {
     function checkCollisions() {
         for (var i=0; i<allEnemies.length; i++) {
             var enemy1 = allEnemies[i];
-            checkCollision(player, enemy1);
+            if (checkCollision(player, enemy1))
+					processCollision(player, enemy1);
             for (var j=i+1; j<allEnemies.length; j++) {
-                var enemy2 = allEnemies[j];
-                checkCollision(enemy1, enemy2);
+               var enemy2 = allEnemies[j];
+               if (checkCollision(enemy1, enemy2))
+						processCollision(enemy1, enemy2);
             };
         };
     }
 
-    function checkCollision(entity1, entity2) {
-	var collision = ((entity1.y <= entity2.y) && (entity2.y < entity1.y+1));
-	var y = ((entity2.y <= entity1.y) && (entity1.y < entity2.y+1));
-	y = y || collision;
-	collision = ((entity1.x <= entity2.x) && (entity2.x < entity1.x+1));
-	var x = ((entity2.x <= entity1.x) && (entity1.x < entity2.x+1));
-	x = x || collision;
-	collision = x && y;
-	if (collision)
-	   processCollision(entity1, entity2);
-    }
+   function checkCollision(entity1, entity2) {
+		var collision = ((entity1.y <= entity2.y) && (entity2.y < entity1.y+1));
+		var y = ((entity2.y <= entity1.y) && (entity1.y < entity2.y+1));
+		y = y || collision;
+		collision = ((entity1.x <= entity2.x) && (entity2.x < entity1.x+1));
+		var x = ((entity2.x <= entity1.x) && (entity1.x < entity2.x+1));
+		x = x || collision;
+		collision = x && y;
+		return collision;
+   }
 
-    function processCollision(entity1, entity2) {
-	if (entity1 instanceof Player)
-	    if (entity2 instanceof Enemy) {
-		running = false;
-		console.log("Game Over!");
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-	    }
-    }
+   function processCollision(entity1, entity2) {
+		if (entity1 instanceof Player) {
+	   	if (entity2 instanceof Enemy) {
+				running = false;
+				console.log("Game Over!");
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+	   	}
+		} else if (entity1 instanceof Enemy) {
+			if (entity2 instanceof Enemy) {
+				var velocity = entity1.velocity;
+				entity1.velocity = entity2.velocity;
+				entity2.velocity = velocity;
+			}
+		}
+   }
 
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
@@ -126,12 +134,12 @@ var Engine = (function(global) {
      * the data/properties related to the object. Do your drawing in your
      * render methods.
      */
-    function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
-        });
-        player.update();
-    }
+   function updateEntities(dt) {
+      allEnemies.forEach(function(enemy){
+			enemy.update(dt);
+		});
+      player.update();
+   }
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -143,6 +151,7 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
+		if (running) {
         var rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
@@ -173,6 +182,7 @@ var Engine = (function(global) {
         }
 
         renderEntities();
+		}
     }
 
     /* This function is called by the render function and is called on each game
